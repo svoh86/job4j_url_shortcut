@@ -1,7 +1,6 @@
 package ru.job4j.urlshortcut.controller;
 
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +22,6 @@ import java.util.Optional;
 @AllArgsConstructor
 public class SiteController {
     private final SiteService siteService;
-    private final ModelMapper modelMapper;
 
     @PostMapping("/registration")
     public ResponseEntity<SiteDTO> registration(@RequestBody @Valid SiteDomainDTO siteDomainDTO) {
@@ -31,17 +29,11 @@ public class SiteController {
         if (siteDb.isPresent()) {
             throw new IllegalArgumentException("This site " + siteDomainDTO.getDomain() + " is already registered!");
         }
-
         Site site = new Site();
         site.setDomain(siteDomainDTO.getDomain());
-        siteService.save(site);
         return new ResponseEntity<>(
-                convertToSiteDTO(site),
+                siteService.save(site),
                 HttpStatus.OK
         );
-    }
-
-    private SiteDTO convertToSiteDTO(Site site) {
-        return modelMapper.map(site, SiteDTO.class);
     }
 }

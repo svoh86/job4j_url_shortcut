@@ -1,9 +1,6 @@
 package ru.job4j.urlshortcut.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -32,4 +29,11 @@ public class Site {
     private boolean registration;
     @OneToMany(mappedBy = "site")
     private List<URL> urls = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "Site{" + "id=" + id + ", domain='" + domain + '\''
+                + ", login='" + login + '\'' + ", password='" + password + '\''
+                + ", registration=" + registration + ", urls=" + urls + '}';
+    }
 }
