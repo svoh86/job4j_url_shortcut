@@ -1,6 +1,9 @@
 package ru.job4j.urlshortcut.domain;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -34,6 +37,6 @@ public class Site {
     public String toString() {
         return "Site{" + "id=" + id + ", domain='" + domain + '\''
                 + ", login='" + login + '\'' + ", password='" + password + '\''
-                + ", registration=" + registration + ", urls=" + urls + '}';
+                + ", registration=" + registration + '}';
     }
 }
