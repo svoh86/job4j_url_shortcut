@@ -11,4 +11,5 @@ import java.util.Optional;
  */
 public interface URLRepository extends CrudRepository<URL, Integer> {
     Optional<URL> findByAddress(String address);
+    Optional<URL> findByCode(String code);
 }

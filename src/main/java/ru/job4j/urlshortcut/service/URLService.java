@@ -51,4 +51,12 @@ public class URLService {
         }
         return urlCodeDTO;
     }
+
+    public String redirect(String code) {
+        Optional<URL> urlDB = urlRepository.findByCode(code);
+        if (urlDB.isEmpty()) {
+            throw new IllegalArgumentException("Code did not found");
+        }
+        return urlDB.get().getAddress();
+    }
 }

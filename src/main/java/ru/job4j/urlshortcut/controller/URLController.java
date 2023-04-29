@@ -3,9 +3,7 @@ package ru.job4j.urlshortcut.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.job4j.urlshortcut.dto.URLAddressDTO;
 import ru.job4j.urlshortcut.dto.URLCodeDTO;
 import ru.job4j.urlshortcut.service.URLService;
@@ -27,5 +25,12 @@ public class URLController {
                 urlService.save(urlAddressDTO),
                 HttpStatus.OK
         );
+    }
+
+    @GetMapping("/redirect/{code}")
+    public ResponseEntity<Void> redirect(@PathVariable("code") String code) {
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("REDIRECT", urlService.redirect(code))
+                .build();
     }
 }
