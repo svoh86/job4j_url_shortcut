@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS url
 (
     id      SERIAL PRIMARY KEY,
     address TEXT   NOT NULL UNIQUE,
-    code    TEXT   NOT NULL,
+    code    TEXT   NOT NULL UNIQUE,
     count   BIGINT NOT NULL,
     site_id INT    NOT NULL REFERENCES site (id)
 );

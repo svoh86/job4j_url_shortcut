@@ -29,6 +29,7 @@ public class Site {
     private String domain;
     private String login;
     private String password;
+    @Transient
     private boolean registration;
     @OneToMany(mappedBy = "site")
     private List<URL> urls = new ArrayList<>();
