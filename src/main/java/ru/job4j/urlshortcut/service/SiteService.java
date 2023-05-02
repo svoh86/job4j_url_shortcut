@@ -14,8 +14,7 @@ import ru.job4j.urlshortcut.domain.Site;
 import ru.job4j.urlshortcut.dto.SiteDTO;
 import ru.job4j.urlshortcut.repository.SiteRepository;
 
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author Svistunov Mikhail
@@ -36,20 +35,43 @@ public class SiteService implements UserDetailsService {
         return new User(site.getLogin(), site.getPassword(), Collections.emptyList());
     }
 
-    public Optional<Site> findByDomain(String domain) {
-        return siteRepository.findByDomain(domain);
-    }
-
-    @Transactional
+    @Transactional()
     public SiteDTO save(Site site) {
         String login = RandomStringUtils.randomAlphabetic(10);
         String password = RandomStringUtils.randomAlphanumeric(10);
         site.setLogin(login);
         site.setPassword(encoder.encode(password));
+//        List<String> loginAndPassword = generatorOfLoginAndPassword();
         site.setRegistration(true);
-        siteRepository.save(site);
+        try {
+            siteRepository.save(site);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(("This site " + site.getDomain() + " is already registered!"));
+        }
         SiteDTO siteDTO = modelMapper.map(site, SiteDTO.class);
         siteDTO.setPassword(password);
         return siteDTO;
     }
+
+//    @Transactional
+//    public List<String> generatorOfLoginAndPassword() {
+//        Site site = new Site();
+//        List<String> loginAndPassword = new ArrayList<>();
+//        boolean flag = true;
+//        String login = "123";
+//        while (flag) {
+//            String password = RandomStringUtils.randomAlphanumeric(10);
+//            site.setLogin(login);
+//            site.setPassword(encoder.encode(password));
+//            try {
+//                siteRepository.save(site);
+//                loginAndPassword.add(login);
+//                loginAndPassword.add(password);
+//                flag = false;
+//            } catch (Exception ignored) {
+//                login = "444";
+//            }
+//        }
+//        return loginAndPassword;
+//    }
 }

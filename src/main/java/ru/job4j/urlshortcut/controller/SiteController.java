@@ -12,7 +12,6 @@ import ru.job4j.urlshortcut.dto.SiteDomainDTO;
 import ru.job4j.urlshortcut.service.SiteService;
 
 import javax.validation.Valid;
-import java.util.Optional;
 
 /**
  * @author Svistunov Mikhail
@@ -25,10 +24,6 @@ public class SiteController {
 
     @PostMapping("/registration")
     public ResponseEntity<SiteDTO> registration(@RequestBody @Valid SiteDomainDTO siteDomainDTO) {
-        Optional<Site> siteDb = siteService.findByDomain(siteDomainDTO.getDomain());
-        if (siteDb.isPresent()) {
-            throw new IllegalArgumentException("This site " + siteDomainDTO.getDomain() + " is already registered!");
-        }
         Site site = new Site();
         site.setDomain(siteDomainDTO.getDomain());
         return new ResponseEntity<>(

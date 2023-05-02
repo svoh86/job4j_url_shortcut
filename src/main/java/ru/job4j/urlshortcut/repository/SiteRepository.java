@@ -10,7 +10,5 @@ import java.util.Optional;
  * @version 1.0
  */
 public interface SiteRepository extends CrudRepository<Site, Integer> {
-    Optional<Site> findByDomain(String domain);
-
     Optional<Site> findByLogin(String username);
 }
