@@ -10,10 +10,13 @@ import ru.job4j.urlshortcut.domain.Site;
 import ru.job4j.urlshortcut.domain.URL;
 import ru.job4j.urlshortcut.dto.URLAddressDTO;
 import ru.job4j.urlshortcut.dto.URLCodeDTO;
+import ru.job4j.urlshortcut.dto.URLStatisticDTO;
 import ru.job4j.urlshortcut.repository.SiteRepository;
 import ru.job4j.urlshortcut.repository.URLRepository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Svistunov Mikhail
@@ -27,36 +30,41 @@ public class URLService {
     private final SiteRepository siteRepository;
     private final ModelMapper modelMapper;
 
-    public Optional<URL> findByAddress(String address) {
-        return urlRepository.findByAddress(address);
+    @Transactional
+    public URLCodeDTO save(URLAddressDTO urlAddressDTO) {
+        URL url = new URL();
+        String code = RandomStringUtils.randomAlphanumeric(8);
+        String login = SecurityContextHolder.getContext().getAuthentication().getName();
+        Site site = siteRepository.findByLogin(login).orElseThrow(
+                () -> new IllegalArgumentException("This site did not found"));
+        url.setAddress(urlAddressDTO.getAddress());
+        url.setSite(site);
+        url.setCode(code);
+        try {
+            urlRepository.save(url);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("This url " + url.getAddress() + " is already registered!");
+        }
+        return modelMapper.map(url, URLCodeDTO.class);
     }
 
     @Transactional
-    public URLCodeDTO save(URLAddressDTO urlAddressDTO) {
-        URLCodeDTO urlCodeDTO;
-        Optional<URL> urlDB = findByAddress(urlAddressDTO.getAddress());
-        if (urlDB.isPresent()) {
-            urlCodeDTO = modelMapper.map(urlDB, URLCodeDTO.class);
-        } else {
-            URL url = new URL();
-            String code = RandomStringUtils.randomAlphanumeric(8);
-            String login = SecurityContextHolder.getContext().getAuthentication().getName();
-            Site site = siteRepository.findByLogin(login).orElseThrow(
-                    () -> new IllegalArgumentException("This site did not found"));
-            url.setAddress(urlAddressDTO.getAddress());
-            url.setSite(site);
-            url.setCode(code);
-            urlRepository.save(url);
-            urlCodeDTO = modelMapper.map(url, URLCodeDTO.class);
-        }
-        return urlCodeDTO;
-    }
-
     public String redirect(String code) {
         Optional<URL> urlDB = urlRepository.findByCode(code);
         if (urlDB.isEmpty()) {
             throw new IllegalArgumentException("Code did not found");
         }
+        urlRepository.incrementCount(code);
         return urlDB.get().getAddress();
+    }
+
+    public List<URLStatisticDTO> statistic() {
+        String login = SecurityContextHolder.getContext().getAuthentication().getName();
+        Site site = siteRepository.findByLogin(login).orElseThrow(
+                () -> new IllegalArgumentException("This site did not found"));
+        List<URL> urls = site.getUrls();
+        return urls.stream().
+                map(u -> modelMapper.map(u, URLStatisticDTO.class))
+                .collect(Collectors.toList());
     }
 }

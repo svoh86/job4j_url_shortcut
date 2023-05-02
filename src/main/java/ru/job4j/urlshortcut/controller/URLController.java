@@ -6,9 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.urlshortcut.dto.URLAddressDTO;
 import ru.job4j.urlshortcut.dto.URLCodeDTO;
+import ru.job4j.urlshortcut.dto.URLStatisticDTO;
 import ru.job4j.urlshortcut.service.URLService;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author Svistunov Mikhail
@@ -32,5 +34,10 @@ public class URLController {
         return ResponseEntity.status(HttpStatus.FOUND)
                 .header("REDIRECT", urlService.redirect(code))
                 .build();
+    }
+
+    @GetMapping("/statistic")
+    public List<URLStatisticDTO> statistic() {
+        return urlService.statistic();
     }
 }
