@@ -9,12 +9,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.job4j.urlshortcut.domain.Site;
 import ru.job4j.urlshortcut.dto.SiteDTO;
 import ru.job4j.urlshortcut.repository.SiteRepository;
 
-import java.util.*;
+import java.util.Collections;
 
 /**
  * @author Svistunov Mikhail
@@ -22,7 +21,6 @@ import java.util.*;
  */
 @Service
 @AllArgsConstructor
-@Transactional(readOnly = true)
 public class SiteService implements UserDetailsService {
     private final SiteRepository siteRepository;
     private final BCryptPasswordEncoder encoder;
@@ -35,13 +33,11 @@ public class SiteService implements UserDetailsService {
         return new User(site.getLogin(), site.getPassword(), Collections.emptyList());
     }
 
-    @Transactional()
     public SiteDTO save(Site site) {
         String login = RandomStringUtils.randomAlphabetic(10);
         String password = RandomStringUtils.randomAlphanumeric(10);
         site.setLogin(login);
         site.setPassword(encoder.encode(password));
-//        List<String> loginAndPassword = generatorOfLoginAndPassword();
         site.setRegistration(true);
         try {
             siteRepository.save(site);
@@ -52,26 +48,4 @@ public class SiteService implements UserDetailsService {
         siteDTO.setPassword(password);
         return siteDTO;
     }
-
-//    @Transactional
-//    public List<String> generatorOfLoginAndPassword() {
-//        Site site = new Site();
-//        List<String> loginAndPassword = new ArrayList<>();
-//        boolean flag = true;
-//        String login = "123";
-//        while (flag) {
-//            String password = RandomStringUtils.randomAlphanumeric(10);
-//            site.setLogin(login);
-//            site.setPassword(encoder.encode(password));
-//            try {
-//                siteRepository.save(site);
-//                loginAndPassword.add(login);
-//                loginAndPassword.add(password);
-//                flag = false;
-//            } catch (Exception ignored) {
-//                login = "444";
-//            }
-//        }
-//        return loginAndPassword;
-//    }
 }

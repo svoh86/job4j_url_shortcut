@@ -17,6 +17,7 @@ import ru.job4j.urlshortcut.dto.URLStatisticDTO;
 import ru.job4j.urlshortcut.service.URLService;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -88,11 +89,11 @@ class URLControllerTest {
     @Test
     public void whenRedirectFail() throws Exception {
         String code = "123456";
-        when(urlService.redirect(code)).thenThrow(new IllegalArgumentException("This code did not found"));
+        when(urlService.redirect(code)).thenThrow(new NoSuchElementException("This code did not found"));
 
         mockMvc.perform(get("/redirect/123456"))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("message").value("Check the entered data"))
                 .andExpect(jsonPath("details").value("This code did not found"));
     }

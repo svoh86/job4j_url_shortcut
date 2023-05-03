@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 /**
@@ -29,6 +30,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public void handler(Exception e, HttpServletResponse response) throws IOException {
         response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setContentType("application/json");
+        response.getWriter().write(objectMapper.writeValueAsString(new HashMap<>() {{
+            put("message", "Check the entered data");
+            put("details", e.getMessage());
+        }}));
+        LOGGER.error(e.getMessage());
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public void handlerForNotFound(Exception e, HttpServletResponse response) throws IOException {
+        response.setStatus(HttpStatus.NOT_FOUND.value());
         response.setContentType("application/json");
         response.getWriter().write(objectMapper.writeValueAsString(new HashMap<>() {{
             put("message", "Check the entered data");

@@ -15,6 +15,7 @@ import ru.job4j.urlshortcut.repository.SiteRepository;
 import ru.job4j.urlshortcut.repository.URLRepository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -24,19 +25,17 @@ import java.util.stream.Collectors;
  */
 @Service
 @AllArgsConstructor
-@Transactional(readOnly = true)
 public class URLService {
     private final URLRepository urlRepository;
     private final SiteRepository siteRepository;
     private final ModelMapper modelMapper;
 
-    @Transactional
     public URLCodeDTO save(URLAddressDTO urlAddressDTO) {
         URL url = new URL();
         String code = RandomStringUtils.randomAlphanumeric(8);
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
         Site site = siteRepository.findByLogin(login).orElseThrow(
-                () -> new IllegalArgumentException("This site did not found"));
+                () -> new NoSuchElementException("This site did not found"));
         url.setAddress(urlAddressDTO.getAddress());
         url.setSite(site);
         url.setCode(code);
@@ -52,7 +51,7 @@ public class URLService {
     public String redirect(String code) {
         Optional<URL> urlDB = urlRepository.findByCode(code);
         if (urlDB.isEmpty()) {
-            throw new IllegalArgumentException("Code did not found");
+            throw new NoSuchElementException("Code did not found");
         }
         urlRepository.incrementCount(code);
         return urlDB.get().getAddress();
@@ -61,7 +60,7 @@ public class URLService {
     public List<URLStatisticDTO> statistic() {
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
         Site site = siteRepository.findByLogin(login).orElseThrow(
-                () -> new IllegalArgumentException("This site did not found"));
+                () -> new NoSuchElementException("This site did not found"));
         List<URL> urls = site.getUrls();
         return urls.stream().
                 map(u -> modelMapper.map(u, URLStatisticDTO.class))
