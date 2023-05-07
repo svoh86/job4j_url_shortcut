@@ -1,9 +1,9 @@
 CREATE TABLE IF NOT EXISTS site
 (
-    id           SERIAL PRIMARY KEY,
-    domain       TEXT NOT NULL UNIQUE,
-    login        TEXT NOT NULL UNIQUE,
-    password     TEXT NOT NULL UNIQUE
+    id       SERIAL PRIMARY KEY,
+    domain   TEXT NOT NULL UNIQUE,
+    login    TEXT UNIQUE,
+    password TEXT UNIQUE
 );
 
 comment on table site is 'Сайт';

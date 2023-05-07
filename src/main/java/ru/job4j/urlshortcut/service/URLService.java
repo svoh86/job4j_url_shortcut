@@ -1,11 +1,11 @@
 package ru.job4j.urlshortcut.service;
 
 import lombok.AllArgsConstructor;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.DigestUtils;
 import ru.job4j.urlshortcut.domain.Site;
 import ru.job4j.urlshortcut.domain.URL;
 import ru.job4j.urlshortcut.dto.URLAddressDTO;
@@ -32,19 +32,24 @@ public class URLService {
 
     public URLCodeDTO save(URLAddressDTO urlAddressDTO) {
         URL url = new URL();
-        String code = RandomStringUtils.randomAlphanumeric(8);
         String login = SecurityContextHolder.getContext().getAuthentication().getName();
         Site site = siteRepository.findByLogin(login).orElseThrow(
                 () -> new NoSuchElementException("This site did not found"));
         url.setAddress(urlAddressDTO.getAddress());
         url.setSite(site);
-        url.setCode(code);
         try {
+            urlRepository.save(url);
+            String code = generateCode(url.getId());
+            url.setCode(code);
             urlRepository.save(url);
         } catch (Exception e) {
             throw new IllegalArgumentException("This url " + url.getAddress() + " is already registered!");
         }
         return modelMapper.map(url, URLCodeDTO.class);
+    }
+
+    private String generateCode(int seed) {
+        return DigestUtils.md5DigestAsHex(("code" + seed).getBytes()).substring(0, 10);
     }
 
     @Transactional
