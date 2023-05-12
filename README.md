@@ -1,5 +1,7 @@
 # Web-приложение для изучения RestFul API архитектуры
 
+[![Java CI with Maven](https://github.com/svoh86/job4j_url_shortcut/actions/workflows/maven.yml/badge.svg)](https://github.com/svoh86/job4j_url_shortcut/actions/workflows/maven.yml)
+
 + [О проекте](#О-проекте)
 + [Технологии](#Технологии)
 + [Требования к окружению](#Требования-к-окружению)
